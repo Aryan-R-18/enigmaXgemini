@@ -17,30 +17,43 @@ vercel --prod
 
 if [ $? -eq 0 ]; then
     echo "✅ Backend deployed successfully!"
-    echo "📝 Please note your backend URL and update the frontend .env file"
     echo ""
-    echo "Update your .env file with:"
-    echo "VITE_API_URL=https://your-backend-url.vercel.app/api"
+    echo "📝 IMPORTANT: Copy your backend URL from above and update frontend environment"
+    echo "Either:"
+    echo "1. Update .env.production file with: VITE_API_URL=https://your-backend-url.vercel.app/api"
+    echo "2. Or set environment variables in Vercel dashboard"
     echo ""
-    read -p "Press Enter after updating the .env file..."
+    read -p "Press Enter after updating the environment configuration..."
 else
     echo "❌ Backend deployment failed!"
     exit 1
 fi
 
-echo "📦 Step 2: Deploying Frontend..."
+echo "📦 Step 2: Building Frontend..."
 cd ..
 echo "Current directory: $(pwd)"
+npm run build
+
+if [ $? -eq 0 ]; then
+    echo "✅ Frontend build successful!"
+else
+    echo "❌ Frontend build failed!"
+    exit 1
+fi
+
+echo "📦 Step 3: Deploying Frontend..."
 vercel --prod
 
 if [ $? -eq 0 ]; then
     echo "✅ Frontend deployed successfully!"
     echo "🎉 Deployment complete!"
     echo ""
-    echo "Next steps:"
-    echo "1. Test your application"
-    echo "2. Check MongoDB Atlas for data"
-    echo "3. Verify WhatsApp group link works"
+    echo "🧪 Testing checklist:"
+    echo "1. Open your frontend URL"
+    echo "2. Test registration form"
+    echo "3. Check MongoDB Atlas for data"
+    echo "4. Verify WhatsApp group link works"
+    echo "5. Check browser console for errors"
 else
     echo "❌ Frontend deployment failed!"
     exit 1
