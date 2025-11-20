@@ -31,3 +31,4 @@ server/.vercel
 *.sln
 *.sw?
 
+server/
