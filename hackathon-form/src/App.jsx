@@ -519,7 +519,7 @@ export default function App() {
       <footer className="mt-8 mb-4 text-center z-10">
         <div className="inline-block bg-white border-4 border-black px-6 py-3 pixel-shadow">
           <p className="font-8bit-text text-sm md:text-base">
-            <span className="text-red-500">❤️</span> Enigma{' '}
+            <span className="text-red-500"></span> Enigma{' '}
             <span className="text-blue-600">VSSUT</span>
           </p>
         </div>
