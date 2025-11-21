@@ -86,10 +86,11 @@ const FontStyles = () => (
 );
 
 // Button Component
-const PixelButton = ({ children, type, disabled }) => (
+const PixelButton = ({ children, type, disabled, onClick }) => (
   <button
     type={type}
     disabled={disabled}
+    onClick={onClick}
     className={`
       bg-blue-500 text-white font-8bit-headers text-xs md:text-sm py-4 px-6 
       border-4 border-black pixel-shadow w-full uppercase tracking-widest
@@ -158,6 +159,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({ isOpen: false, type: 'success', message: '' });
+  const [showThankYou, setShowThankYou] = useState(false);
 
   const [formData, setFormData] = useState({
     leaderName: '',
@@ -170,7 +172,7 @@ export default function App() {
     member2Gender: 'Select'
   });
 
-  // Initialize Mock User (replacing Firebase Auth)
+  // Initialize Meplacing Firebase Auth)
   useEffect(() => {
     // Generate a mock user ID for this session
     const mockUser = { uid: generateMockUserId() };
@@ -292,8 +294,45 @@ export default function App() {
         isOpen={modal.isOpen}
         type={modal.type}
         message={modal.message}
-        onClose={() => setModal({ ...modal, isOpen: false })}
+        onClose={() => {
+          setModal({ ...modal, isOpen: false });
+          if (modal.type === 'success') {
+            setShowThankYou(true);
+          }
+        }}
       />
+
+      {/* Thank You Screen */}
+      {showThankYou && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center p-4 z-50">
+          <div className="nes-container p-8 max-w-lg w-full text-center">
+            <div className="mb-6">
+              <div className="inline-block bg-yellow-400 p-4 border-4 border-black mb-4 animate-bounce">
+                <Check size={48} className="text-green-600" />
+              </div>
+            </div>
+            
+            <h1 className="font-8bit-headers text-2xl md:text-3xl mb-6 text-green-600">
+              THANK YOU!
+            </h1>
+            
+            <p className="font-8bit-text text-xl md:text-2xl mb-4">
+              Registration Successful!
+            </p>
+            
+            <p className="font-8bit-text text-lg mb-8 text-gray-700">
+              Your team has been registered for the hackathon. Check Whatsapp group for further details!
+            </p>
+
+            <button
+              onClick={() => setShowThankYou(false)}
+              className="bg-blue-500 text-white font-8bit-headers text-sm py-4 px-8 border-4 border-black pixel-shadow uppercase tracking-widest hover:bg-blue-600 transition-colors"
+            >
+              CLOSE
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
