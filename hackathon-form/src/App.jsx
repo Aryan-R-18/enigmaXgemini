@@ -10,6 +10,9 @@ import instructionsPDF from './assets/The 8-Bit Prompt.pdf';
 
 const appId = import.meta.env.VITE_APP_ID || "bit-hackathon";
 
+// REGISTRATION STATUS - Set to false to close registration
+const REGISTRATION_OPEN = false;
+
 // --- THEME ---
 const THEME = {
   primary: '#3b82f6',
@@ -309,6 +312,110 @@ export default function App() {
     }
     setLoading(false);
   };
+
+  // Registration Closed Screen
+  if (!REGISTRATION_OPEN) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #e3f2fd 0%, #fff9c4 25%, #ffebee 50%, #e8f5e9 75%, #e3f2fd 100%)', backgroundSize: '400% 400%', animation: 'gradientShift 15s ease infinite' }}>
+        <FontStyles />
+        <div className="scanlines" />
+
+        {/* Animated Background Elements */}
+        <div className="absolute top-10 left-10 w-16 h-16 bg-yellow-400 border-4 border-black animate-bounce" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
+        
+        <div className="absolute top-20 right-20 w-12 h-12 border-4 border-black rounded-full animate-pulse" style={{ backgroundColor: '#4285F4' }}></div>
+        <div className="absolute bottom-32 left-20 w-12 h-12 border-4 border-black rounded-full animate-pulse" style={{ backgroundColor: '#EA4335', animationDelay: '0.3s' }}></div>
+        <div className="absolute top-1/3 right-10 w-12 h-12 border-4 border-black rounded-full animate-pulse" style={{ backgroundColor: '#34A853', animationDelay: '0.6s' }}></div>
+        <div className="absolute bottom-1/3 left-1/4 w-10 h-10 border-4 border-black rounded-full animate-pulse" style={{ backgroundColor: '#FBBC04', animationDelay: '0.9s' }}></div>
+
+        {/* Floating elements */}
+        <div className="absolute top-1/4 left-1/3 w-8 h-8 border-2 border-black pixel-float" style={{ backgroundColor: '#4285F4' }}></div>
+        <div className="absolute top-2/3 right-1/4 w-8 h-8 border-2 border-black pixel-float" style={{ backgroundColor: '#EA4335', animationDelay: '0.3s' }}></div>
+        <div className="absolute bottom-1/4 left-1/2 w-8 h-8 border-2 border-black pixel-float" style={{ backgroundColor: '#34A853', animationDelay: '0.6s' }}></div>
+
+        {/* Main Content */}
+        <div className="nes-container max-w-2xl w-full p-8 md:p-12 bg-white text-center relative z-10">
+          {/* Sad Pac-Man */}
+          <div className="mb-8 flex justify-center">
+            <div className="relative">
+              <div className="w-24 h-24 bg-yellow-400 border-4 border-black rounded-full relative">
+                {/* Sad eyes */}
+                <div className="absolute top-6 left-6 w-3 h-4 bg-black"></div>
+                <div className="absolute top-6 right-6 w-3 h-4 bg-black"></div>
+                {/* Sad mouth */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-12 h-6 border-b-4 border-black rounded-b-full"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Title */}
+          <h1 className="font-8bit-headers text-2xl md:text-4xl mb-6">
+            <span style={{ color: '#EA4335' }}>R</span>
+            <span style={{ color: '#4285F4' }}>E</span>
+            <span style={{ color: '#FBBC04' }}>G</span>
+            <span style={{ color: '#34A853' }}>I</span>
+            <span style={{ color: '#EA4335' }}>S</span>
+            <span style={{ color: '#4285F4' }}>T</span>
+            <span style={{ color: '#FBBC04' }}>R</span>
+            <span style={{ color: '#34A853' }}>A</span>
+            <span style={{ color: '#EA4335' }}>T</span>
+            <span style={{ color: '#4285F4' }}>I</span>
+            <span style={{ color: '#FBBC04' }}>O</span>
+            <span style={{ color: '#34A853' }}>N</span>
+          </h1>
+
+          <h2 className="font-8bit-headers text-3xl md:text-5xl mb-8 text-red-500">
+            CLOSED
+          </h2>
+
+          {/* Message */}
+          <div className="mb-8">
+            <p className="font-8bit-text text-xl md:text-2xl mb-4 text-gray-700">
+              Game Over!
+            </p>
+            <p className="font-8bit-text text-lg md:text-xl text-gray-600">
+              Registration period has ended.
+            </p>
+          </div>
+
+          {/* Decorative divider */}
+          <div className="flex justify-center items-center gap-4 mb-8">
+            <div className="w-12 h-1 bg-black"></div>
+            <div className="w-4 h-4 bg-yellow-400 border-2 border-black rotate-45"></div>
+            <div className="w-12 h-1 bg-black"></div>
+          </div>
+
+          {/* See you message */}
+          <div className="mb-8">
+            <p className="font-8bit-headers text-xl md:text-2xl mb-4" style={{ color: '#4285F4' }}>
+              SEE YOU
+            </p>
+            <p className="font-8bit-headers text-xl md:text-2xl" style={{ color: '#34A853' }}>
+              NEXT TIME!
+            </p>
+          </div>
+
+          {/* Pixel hearts */}
+          <div className="flex justify-center gap-4 text-3xl">
+            <span className="animate-pulse">💙</span>
+            <span className="animate-pulse" style={{ animationDelay: '0.2s' }}>💚</span>
+            <span className="animate-pulse" style={{ animationDelay: '0.4s' }}>💛</span>
+            <span className="animate-pulse" style={{ animationDelay: '0.6s' }}>❤️</span>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer className="mt-8 mb-4 text-center z-10">
+          <div className="inline-block bg-white border-4 border-black px-6 py-3 pixel-shadow">
+            <p className="font-8bit-text text-sm md:text-base">
+              <span className="text-red-500"></span>Enigma{' '}
+              <span className="text-blue-600">VSSUT</span>
+            </p>
+          </div>
+        </footer>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col items-center justify-center relative overflow-hidden">
