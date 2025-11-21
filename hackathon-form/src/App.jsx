@@ -522,9 +522,6 @@ export default function App() {
             <span className="text-red-500">❤️</span> Enigma{' '}
             <span className="text-blue-600">VSSUT</span>
           </p>
-          <p className="font-8bit-text text-xs mt-1 text-gray-600">
-            ArnR
-          </p>
         </div>
       </footer>
     </div>
