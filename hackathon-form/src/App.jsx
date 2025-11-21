@@ -1,9 +1,12 @@
 // App.jsx
 import { useState, useEffect } from 'react';
-import { Check, AlertCircle, Ghost, Gamepad2 } from 'lucide-react';
+import { Check, AlertCircle } from 'lucide-react';
 
 // IMPORT MONGODB CONFIG
 import { addDocument, generateMockUserId } from "./mongoConfig";
+
+// IMPORT PDF
+import instructionsPDF from './assets/The 8-Bit Prompt.pdf';
 
 const appId = import.meta.env.VITE_APP_ID || "bit-hackathon";
 
@@ -15,6 +18,11 @@ const THEME = {
   bg: '#f0f0f0',
   text: '#111827',
   border: '#000000',
+  // Google Colors
+  googleBlue: '#4285F4',
+  googleRed: '#EA4335',
+  googleYellow: '#FBBC04',
+  googleGreen: '#34A853',
 };
 
 // --- FONT STYLES ---
@@ -23,14 +31,15 @@ const FontStyles = () => (
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
 
     body {
-      background-color: ${THEME.bg};
-      background-image: 
-        linear-gradient(45deg, #e5e5e5 25%, transparent 25%), 
-        linear-gradient(-45deg, #e5e5e5 25%, transparent 25%), 
-        linear-gradient(45deg, transparent 75%, #e5e5e5 75%), 
-        linear-gradient(-45deg, transparent 75%, #e5e5e5 75%);
-      background-size: 20px 20px;
-      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      background: linear-gradient(135deg, #e3f2fd 0%, #fff9c4 25%, #ffebee 50%, #e8f5e9 75%, #e3f2fd 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     .font-8bit-headers {
@@ -73,14 +82,65 @@ const FontStyles = () => (
         to bottom,
         transparent,
         transparent 50%,
-        rgba(0,0,0,0.05) 50%,
-        rgba(0,0,0,0.05)
+        rgba(0,0,0,0.02) 50%,
+        rgba(0,0,0,0.02)
       );
       background-size: 100% 4px;
       position: fixed;
       inset: 0;
       pointer-events: none;
-      z-index: 9999;
+      z-index: 1;
+    }
+
+    /* Pixelated animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    @keyframes slideRight {
+      0% { transform: translateX(-100px); }
+      100% { transform: translateX(calc(100vw + 100px)); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+
+    .pixel-float {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .pixel-spin {
+      animation: spin 4s linear infinite;
+    }
+
+    .pixel-wiggle {
+      animation: wiggle 1s ease-in-out infinite;
+    }
+
+    /* Google color dots */
+    .google-dot {
+      width: 8px;
+      height: 8px;
+      border: 2px solid black;
+      position: absolute;
+    }
+
+    /* Confetti effect */
+    @keyframes confetti-fall {
+      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+
+    .confetti {
+      animation: confetti-fall 3s linear infinite;
     }
   `}</style>
 );
@@ -113,7 +173,24 @@ const PixelModal = ({ isOpen, type, message, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
+    <div className="fixed inset-0 flex justify-center items-center p-4" style={{ zIndex: 9998, background: 'linear-gradient(135deg, #e3f2fd 0%, #fff9c4 25%, #ffebee 50%, #e8f5e9 75%, #e3f2fd 100%)', backgroundSize: '400% 400%', animation: 'gradientShift 15s ease infinite' }}>
+      {/* Floating pixelated elements in modal background */}
+      <div className="absolute top-10 left-10 w-8 h-8 border-4 border-black rounded-full animate-bounce" style={{ backgroundColor: '#4285F4' }}></div>
+      <div className="absolute top-20 right-20 w-8 h-8 border-4 border-black rounded-full animate-pulse" style={{ backgroundColor: '#EA4335' }}></div>
+      <div className="absolute bottom-20 left-20 w-8 h-8 border-4 border-black rounded-full animate-bounce" style={{ backgroundColor: '#34A853', animationDelay: '0.3s' }}></div>
+      <div className="absolute bottom-10 right-10 w-8 h-8 border-4 border-black rounded-full animate-pulse" style={{ backgroundColor: '#FBBC04', animationDelay: '0.5s' }}></div>
+      
+      {/* Pixelated stars */}
+      <div className="absolute top-1/4 left-1/4 w-6 h-6 border-2 border-black pixel-float" style={{ backgroundColor: '#FBBC04' }}>
+        <div className="absolute inset-0 flex items-center justify-center text-xs">⭐</div>
+      </div>
+      <div className="absolute top-1/3 right-1/3 w-6 h-6 border-2 border-black pixel-float" style={{ backgroundColor: '#4285F4', animationDelay: '0.4s' }}>
+        <div className="absolute inset-0 flex items-center justify-center text-xs">⭐</div>
+      </div>
+      <div className="absolute bottom-1/4 right-1/4 w-6 h-6 border-2 border-black pixel-float" style={{ backgroundColor: '#EA4335', animationDelay: '0.7s' }}>
+        <div className="absolute inset-0 flex items-center justify-center text-xs">⭐</div>
+      </div>
+
       <div className="nes-container p-8 max-w-md w-full text-center relative">
         <div className="absolute -top-6 left-1/2 -translate-x-1/2">
           {isSuccess ? (
@@ -234,19 +311,79 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-8 flex flex-col items-center justify-center">
+    <div className="min-h-screen p-4 md:p-8 flex flex-col items-center justify-center relative overflow-hidden">
       <FontStyles />
       <div className="scanlines" />
 
-      <div className="absolute top-10 left-10 text-blue-400 opacity-50 hidden lg:block animate-bounce">
-        <Ghost size={48} />
+      {/* Pixelated Pac-Man Style Decorations */}
+      {/* Pac-Man */}
+      <div className="absolute top-10 left-10 w-12 h-12 bg-yellow-400 border-4 border-black hidden lg:block animate-bounce" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
+      
+      {/* Google Colored Dots */}
+      <div className="absolute top-20 right-20 w-10 h-10 border-4 border-black rounded-full hidden lg:block animate-pulse" style={{ backgroundColor: '#4285F4' }}></div>
+      
+      <div className="absolute bottom-32 left-20 w-10 h-10 border-4 border-black rounded-full hidden lg:block animate-pulse" style={{ backgroundColor: '#EA4335' }}></div>
+      
+      <div className="absolute top-1/3 right-10 w-10 h-10 border-4 border-black rounded-full hidden lg:block animate-pulse" style={{ backgroundColor: '#34A853' }}></div>
+
+      <div className="absolute bottom-1/3 left-1/4 w-8 h-8 border-4 border-black rounded-full hidden lg:block animate-pulse" style={{ backgroundColor: '#FBBC04', animationDelay: '0.5s' }}></div>
+
+      {/* Small pixelated squares */}
+      <div className="absolute top-1/4 left-1/3 w-6 h-6 border-2 border-black hidden lg:block pixel-float" style={{ backgroundColor: '#4285F4' }}></div>
+      <div className="absolute top-2/3 right-1/4 w-6 h-6 border-2 border-black hidden lg:block pixel-float" style={{ backgroundColor: '#EA4335', animationDelay: '0.3s' }}></div>
+      <div className="absolute bottom-1/4 left-1/2 w-6 h-6 border-2 border-black hidden lg:block pixel-float" style={{ backgroundColor: '#34A853', animationDelay: '0.6s' }}></div>
+
+      {/* Pixelated Ghosts */}
+      <div className="absolute top-10 right-10 hidden lg:block animate-bounce" style={{ animationDelay: '0.2s' }}>
+        <div className="relative">
+          <div className="w-12 h-12 bg-blue-400 border-4 border-black rounded-t-full"></div>
+          <div className="w-12 h-4 bg-blue-400 border-l-4 border-r-4 border-black flex">
+            <div className="w-3 h-4 bg-blue-400 border-r-4 border-black"></div>
+            <div className="w-3 h-4 bg-blue-400 border-r-4 border-black"></div>
+            <div className="w-3 h-4 bg-blue-400 border-r-4 border-black"></div>
+            <div className="w-3 h-4 bg-blue-400"></div>
+          </div>
+        </div>
       </div>
 
-      <div className="absolute bottom-10 right-10 text-red-400 opacity-50 hidden lg:block animate-bounce">
-        <Gamepad2 size={48} />
+      <div className="absolute bottom-20 left-10 hidden lg:block animate-bounce" style={{ animationDelay: '0.4s' }}>
+        <div className="relative">
+          <div className="w-12 h-12 bg-red-400 border-4 border-black rounded-t-full"></div>
+          <div className="w-12 h-4 bg-red-400 border-l-4 border-r-4 border-black flex">
+            <div className="w-3 h-4 bg-red-400 border-r-4 border-black"></div>
+            <div className="w-3 h-4 bg-red-400 border-r-4 border-black"></div>
+            <div className="w-3 h-4 bg-red-400 border-r-4 border-black"></div>
+            <div className="w-3 h-4 bg-red-400"></div>
+          </div>
+        </div>
       </div>
 
-      <div className="nes-container max-w-2xl w-full p-6 md:p-10 bg-white mt-8 relative">
+      {/* Pixelated Dots Trail */}
+      <div className="absolute top-1/2 left-0 w-full hidden lg:flex justify-around opacity-30">
+        <div className="w-3 h-3 bg-yellow-400 border-2 border-black"></div>
+        <div className="w-3 h-3 bg-yellow-400 border-2 border-black"></div>
+        <div className="w-3 h-3 bg-yellow-400 border-2 border-black"></div>
+        <div className="w-3 h-3 bg-yellow-400 border-2 border-black"></div>
+        <div className="w-3 h-3 bg-yellow-400 border-2 border-black"></div>
+      </div>
+
+      <div className="nes-container max-w-2xl w-full p-6 md:p-10 bg-white mt-8 relative z-10">
+        {/* Form Title */}
+        <div className="text-center mb-8">
+          <h1 className="font-8bit-headers text-xl md:text-2xl mb-2">
+            <span style={{ color: '#4285F4' }}>V</span>
+            <span style={{ color: '#EA4335' }}>I</span>
+            <span style={{ color: '#FBBC04' }}>B</span>
+            <span style={{ color: '#34A853' }}>E</span>
+            <span style={{ color: '#4285F4' }}>A</span>
+            <span style={{ color: '#EA4335' }}>T</span>
+            <span style={{ color: '#FBBC04' }}>H</span>
+            <span style={{ color: '#34A853' }}>O</span>
+            <span style={{ color: '#4285F4' }}>N</span>
+          </h1>
+          <p className="font-8bit-text text-lg text-gray-600">Team Registration</p>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-8">
 
           <h3 className="font-8bit-headers text-sm text-blue-600">
@@ -304,8 +441,41 @@ export default function App() {
 
       {/* Thank You Screen */}
       {showThankYou && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center p-4 z-50">
-          <div className="nes-container p-8 max-w-lg w-full text-center">
+        <div className="fixed inset-0 flex justify-center items-center p-4 overflow-hidden" style={{ zIndex: 9999, background: 'linear-gradient(135deg, #e3f2fd 0%, #fff9c4 25%, #ffebee 50%, #e8f5e9 75%, #e3f2fd 100%)', backgroundSize: '400% 400%', animation: 'gradientShift 15s ease infinite' }}>
+          {/* Animated pixelated elements */}
+          <div className="absolute top-10 left-10 w-10 h-10 bg-yellow-400 border-4 border-black animate-bounce" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
+          
+          {/* Floating Google colored dots */}
+          <div className="absolute top-20 right-20 w-12 h-12 border-4 border-black rounded-full animate-pulse" style={{ backgroundColor: '#4285F4' }}></div>
+          <div className="absolute bottom-32 left-20 w-12 h-12 border-4 border-black rounded-full animate-pulse" style={{ backgroundColor: '#EA4335', animationDelay: '0.3s' }}></div>
+          <div className="absolute top-1/3 right-10 w-12 h-12 border-4 border-black rounded-full animate-pulse" style={{ backgroundColor: '#34A853', animationDelay: '0.6s' }}></div>
+          <div className="absolute bottom-1/3 left-1/4 w-10 h-10 border-4 border-black rounded-full animate-pulse" style={{ backgroundColor: '#FBBC04', animationDelay: '0.9s' }}></div>
+
+          {/* Pixelated confetti */}
+          <div className="absolute top-1/4 left-1/3 w-6 h-6 border-2 border-black pixel-float" style={{ backgroundColor: '#4285F4' }}></div>
+          <div className="absolute top-2/3 right-1/4 w-6 h-6 border-2 border-black pixel-float" style={{ backgroundColor: '#EA4335', animationDelay: '0.3s' }}></div>
+          <div className="absolute bottom-1/4 left-1/2 w-6 h-6 border-2 border-black pixel-float" style={{ backgroundColor: '#34A853', animationDelay: '0.6s' }}></div>
+          <div className="absolute top-1/2 right-1/3 w-6 h-6 border-2 border-black pixel-float" style={{ backgroundColor: '#FBBC04', animationDelay: '0.9s' }}></div>
+
+          {/* Pixelated stars */}
+          <div className="absolute top-16 left-1/2 text-2xl animate-bounce">⭐</div>
+          <div className="absolute bottom-16 right-1/2 text-2xl animate-bounce" style={{ animationDelay: '0.5s' }}>⭐</div>
+          <div className="absolute top-1/2 left-16 text-xl animate-pulse">✨</div>
+          <div className="absolute top-1/2 right-16 text-xl animate-pulse" style={{ animationDelay: '0.3s' }}>✨</div>
+
+          {/* Trophy/Medal elements */}
+          <div className="absolute top-24 right-1/4 text-3xl animate-bounce" style={{ animationDelay: '0.2s' }}>🏆</div>
+          <div className="absolute bottom-24 left-1/4 text-3xl animate-bounce" style={{ animationDelay: '0.7s' }}>🎮</div>
+
+          {/* Additional confetti squares */}
+          <div className="absolute top-0 left-1/4 w-4 h-4 border-2 border-black confetti" style={{ backgroundColor: '#4285F4', animationDelay: '0s' }}></div>
+          <div className="absolute top-0 left-1/2 w-4 h-4 border-2 border-black confetti" style={{ backgroundColor: '#EA4335', animationDelay: '0.5s' }}></div>
+          <div className="absolute top-0 left-3/4 w-4 h-4 border-2 border-black confetti" style={{ backgroundColor: '#FBBC04', animationDelay: '1s' }}></div>
+          <div className="absolute top-0 right-1/4 w-4 h-4 border-2 border-black confetti" style={{ backgroundColor: '#34A853', animationDelay: '1.5s' }}></div>
+          <div className="absolute top-0 right-1/3 w-4 h-4 border-2 border-black confetti" style={{ backgroundColor: '#4285F4', animationDelay: '2s' }}></div>
+          <div className="absolute top-0 left-1/3 w-4 h-4 border-2 border-black confetti" style={{ backgroundColor: '#EA4335', animationDelay: '2.5s' }}></div>
+
+          <div className="nes-container p-8 max-w-lg w-full text-center relative z-10">
             <div className="mb-6">
               <div className="inline-block bg-yellow-400 p-4 border-4 border-black mb-4 animate-bounce">
                 <Check size={48} className="text-green-600" />
@@ -320,9 +490,20 @@ export default function App() {
               Registration Successful!
             </p>
             
-            <p className="font-8bit-text text-lg mb-8 text-gray-700">
+            <p className="font-8bit-text text-lg mb-6 text-gray-700">
               Your team has been registered for the hackathon. Check Whatsapp group for further details!
             </p>
+
+            {/* PDF Download Link */}
+            <div className="mb-6">
+              <a
+                href={instructionsPDF}
+                download="The-8-Bit-Prompt.pdf"
+                className="inline-block bg-yellow-400 text-black font-8bit-headers text-xs py-3 px-6 border-4 border-black pixel-shadow uppercase tracking-widest hover:bg-yellow-500 transition-colors"
+              >
+                📄 VIEW ALL INSTRUCTIONS
+              </a>
+            </div>
 
             <button
               onClick={() => setShowThankYou(false)}
@@ -333,6 +514,19 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+      <footer className="mt-8 mb-4 text-center z-10">
+        <div className="inline-block bg-white border-4 border-black px-6 py-3 pixel-shadow">
+          <p className="font-8bit-text text-sm md:text-base">
+            <span className="text-red-500">❤️</span> Enigma{' '}
+            <span className="text-blue-600">VSSUT</span>
+          </p>
+          <p className="font-8bit-text text-xs mt-1 text-gray-600">
+            ArnR
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
